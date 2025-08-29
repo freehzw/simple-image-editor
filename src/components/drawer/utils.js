@@ -26,7 +26,7 @@ export function base64ToBlob(base64) {
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n);
   }
-  return new File([u8arr], 'image.png', { type: mime });
+  return new File([u8arr], 'image.tmp', { type: mime });
 }
 
 export async function getImgSize(base64) {

@@ -11,14 +11,14 @@
 import brushList from './brush-config';
 
 const props = defineProps({
-  curBrush: String
+  activeBrush: String
 });
 
 const emit = defineEmits(['onSelectBrush']);
-const activeClass = (name) => props.curBrush === name ? 'text-green-500' : 'text-white';
+const activeClass = (name) => props.activeBrush === name ? 'text-green-500' : 'text-white';
 
 const handleSelectBrush = (brushName) => {
-  if (props.curBrush === brushName) return;
+  if (props.activeBrush === brushName) return;
   emit('onSelectBrush', brushName);
 };
 </script>

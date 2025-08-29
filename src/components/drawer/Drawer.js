@@ -67,7 +67,10 @@ class Drawer {
       bgImg.set({ scaleX: scale, scaleY: scale, originX: 'left', originY: 'top' });
 
       this.canvas.setBackgroundImage(bgImg, () => {
-        let base64 = this.canvas.toDataURL();
+        let base64 = this.canvas.toDataURL({
+          format: 'jpeg', // 指定生成 JPG 图片
+          quality: 0.8, // 指定 JPG 图片的质量，范围是 0 到 1
+        });
         resolve(base64);
       });
     });

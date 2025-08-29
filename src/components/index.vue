@@ -1,40 +1,54 @@
 <template>
-  <div class="imgdw-wrapper" v-if="visible">
-    <div class="imgdw-canvas-wrapper" v-if="size" :style="{
-      width: `${size.width}px`,
-      height: `${size.height}px`,
-      transform: `translate(-50%, -50%) scale(${canvasScale})`
-    }">
-      <img class="imgdw-imgbg" :src="imgBase64" />
-      <canvas ref="canvas" :width="size.width" :height="size.height"></canvas>
+  <div class="img-wrapper flex justify-center " v-if="visible">
+    <div class="canvas-wrapper" v-if="imageSize" :style="canvasWrapperStyle" @wheel="handleWheel">
+      <img class="absolute inset-0 z-0" :src="imgBase64" />
+      <canvas ref="canvas" :width="imageSize.width" :height="imageSize.height" />
     </div>
 
-    <Toolbar ref="toolbar" :curBrush="curBrush" :canvasScale="canvasScale" @onSelectBrush="handleSelectBrush"
-      @onUndo="handleUndo" @onScale="handleScale" @onCancel="handleCancel" @onConfirm="handleConfirm" />
+    <Toolbar ref="toolbar" :active-brush="activeBrush" :canvas-scale="canvasScale" @action="action" />
   </div>
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, computed } from 'vue';
 import Drawer from './drawer/Drawer';
 import Toolbar from './components/toolbar/toolbar.vue';
 import { getImg, blobToBase64, getImgSize, base64ToBlob } from './drawer/utils';
 
+const emit = defineEmits(['onSave']);
+
 const visible = ref(false);
 const saving = ref(false);
-const size = ref(null);
+const imageSize = ref(null);
 const drawer = ref(null);
-const curBrush = ref('');
+const activeBrush = ref('');
 const canvasScale = ref(1);
 const imgBase64 = ref('');
 const canvas = ref(null);
 const toolbar = ref(null);
 
-const emit = defineEmits(['onSave']);
+const canvasWrapperStyle = computed(() => ({
+  width: `${imageSize.value?.width}px`,
+  height: `${imageSize.value?.height}px`,
+  transform: `scale(${canvasScale.value})`,
+}));
+
+/**
+ * 滚轮事件，canvas 放大缩小
+ * @param event
+ */
+const handleWheel = (event) => {
+  event.preventDefault();
+  const delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
+  let scale = canvasScale.value + delta * 0.1;
+  scale = Math.max(0.1, Math.min(10, scale)).toFixed(1); // 限制缩放比例在 0.1 到 10 之间
+  canvasScale.value = Number(scale);
+};
+
 
 const initData = () => {
-  size.value = null;
-  curBrush.value = '';
+  imageSize.value = null;
+  activeBrush.value = '';
   canvasScale.value = 1;
   visible.value = true;
   saving.value = false;
@@ -45,7 +59,7 @@ const openUrl = async (url) => {
 
   const imgBlob = await getImg(url);
   const imgBase64Value = await blobToBase64(imgBlob);
-  size.value = await getImgSize(imgBase64Value);
+  imageSize.value = await getImgSize(imgBase64Value);
   imgBase64.value = imgBase64Value;
 
   nextTick(() => {
@@ -56,7 +70,7 @@ const openUrl = async (url) => {
 const openBase64 = async (imgBase64Value) => {
   initData();
 
-  size.value = await getImgSize(imgBase64Value);
+  imageSize.value = await getImgSize(imgBase64Value);
   imgBase64.value = imgBase64Value;
 
   nextTick(() => {
@@ -64,48 +78,57 @@ const openBase64 = async (imgBase64Value) => {
   });
 };
 
-const handleSelectBrush = (brush) => {
-  switch (brush) {
-    case 'rect':
-      drawer.value.drawRect();
-      break;
-    case 'circle':
-      drawer.value.drawCircle();
-      break;
-    case 'text':
-      drawer.value.drawText();
-      break;
-    case 'line':
-      drawer.value.drawLine();
-      break;
+const actions = {
+  // 选择画笔工具
+  selectBrush: (brush) => {
+    switch (brush) {
+      case 'rect':
+        drawer.value.drawRect();
+        break;
+      case 'circle':
+        drawer.value.drawCircle();
+        break;
+      case 'text':
+        drawer.value.drawText();
+        break;
+      case 'line':
+        drawer.value.drawLine();
+        break;
+    }
+    activeBrush.value = brush;
+  },
+  // 撤销上一步
+  undo: () => {
+    drawer.value.history.undo();
+  },
+  // 放大缩小
+  scale: (sizeValue) => {
+    canvasScale.value = sizeValue;
+  },
+  // 取消，关闭画板
+  cancel: () => {
+    visible.value = false;
+  },
+  // 保存
+  confirm: async () => {
+    if (saving.value) return;
+    saving.value = true;
+
+    let base64 = await drawer.value.getImage(imageSize.value.scale);
+    let imgBlob = base64ToBlob(base64);
+
+    visible.value = false;
+
+    emit('onSave', base64, imgBlob);
   }
-
-  curBrush.value = brush;
 };
 
-const handleUndo = () => {
-  drawer.value.history.undo();
-};
+// 处理 action
+function action({ name, value }) {
+  if (value) actions[name](value);
+  else actions[name]();
+}
 
-const handleScale = (sizeValue) => {
-  canvasScale.value = sizeValue;
-};
-
-const handleCancel = () => {
-  visible.value = false;
-};
-
-const handleConfirm = async () => {
-  if (saving.value) return;
-  saving.value = true;
-
-  let base64 = await drawer.value.getImage(size.value.scale);
-  let imgBlob = await base64ToBlob(base64);
-
-  visible.value = false;
-
-  emit('onSave', base64, imgBlob);
-};
 
 defineExpose({
   openUrl,
@@ -113,36 +136,24 @@ defineExpose({
 });
 </script>
 
-<style lang="less" scoped>
-.imgdw-wrapper {
+<style scoped>
+.img-wrapper {
   position: fixed;
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 1000;
+  z-index: 999;
+  padding: 50px;
   background: rgba(0, 0, 0, 0.6);
-  overflow: auto;
+  overflow-y: scroll;
 }
 
-.imgdw-canvas-wrapper {
+.canvas-wrapper {
   position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   width: 100%;
-  height: auto;
   background-color: #fff;
-  padding: 10px;
-  border: 1px solid #fff;
-}
-
-.imgdw-imgbg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 0;
+  /*  关键：设置缩放中心,这样始终保持图片顶部可见 */
+  transform-origin: top center;
 }
 </style>

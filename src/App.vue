@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="h-screen w-screen">
+  <div class="h-screen w-screen">
     <button @click="handleOpenDrawer">打开图片</button>
     <ImageDrawer ref="refImageDrawer" @onSave="handleSave" />
   </div>
