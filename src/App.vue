@@ -4,6 +4,7 @@
     <ImageDrawer ref="refImageDrawer" @onSave="handleSave" />
   </div>
 </template>
+
 <script setup>
 import { ref } from 'vue';
 import ImageDrawer from './components/index.vue';

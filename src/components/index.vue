@@ -38,9 +38,6 @@ const initData = () => {
   canvasScale.value = 1;
   visible.value = true;
   saving.value = false;
-  // nextTick(() => {
-  //   toolbar.value.initPosition();
-  // });
 };
 
 const openUrl = async (url) => {
