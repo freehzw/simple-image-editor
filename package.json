@@ -1,13 +1,26 @@
 {
-  "name": "vite-image-editor",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@freehzw/simple-image-editor",
+  "license": "MIT",
+  "private": false,
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
+  "main": "./dist/simple-image-editor.umd.cjs",
+  "module": "./dist/simple-image-editor.js",
+  "exports": {
+    ".": {
+      "import": "./dist/simple-image-editor.js",
+      "require": "./dist/simple-image-editor.umd.cjs"
+    },
+    "./style.css": "./dist/simple-image-editor.css"
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "fabric": "^4.5.0",
     "lucide-vue-next": "^0.542.0",
@@ -20,5 +33,8 @@
     "postcss": "^8.5.6",
     "tailwindcss": "3",
     "vite": "^7.1.2"
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0"
   }
 }
