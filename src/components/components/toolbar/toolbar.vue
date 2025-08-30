@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed top-[50px] right-[50px] flex flex-col items-center gap-5 p-4 bg-neutral-800/50 rounded-xl z-10 backdrop-blur-sm">
+    class="fixed top-[50px] right-[50px] flex flex-col items-center gap-4 p-4 bg-neutral-800/50 rounded-xl z-10 backdrop-blur-sm">
     <CircleX :size="20" class="cursor-pointer text-red-500" @click="cancel" />
     <CircleCheck :size="20" class="cursor-pointer text-sky-500" @click="confirm" />
 
@@ -14,12 +14,19 @@
     <ZoomIn :size="20" color="#fff" class="cursor-pointer" @click="zoom('in')" title="放大" />
     <ZoomOut :size="20" color="#fff" class="cursor-pointer" @click="zoom('out')" />
     <RefreshCcw :size="20" color="#fff" class="cursor-pointer" @click="zoom('reset')" />
+    <div class="divider" />
+
+    <!-- 取色板 -->
+    <ColorPicker v-model:color="strokeColor" />
   </div>
 </template>
 
 <script setup>
+import { ref, watch } from 'vue';
 import { Undo2, ZoomIn, ZoomOut, CircleX, CircleCheck, RefreshCcw } from 'lucide-vue-next';
 import brush from '../brush/brush.vue';
+import config from '../../drawer/config';
+import ColorPicker from '../colorPicker/index.vue';
 
 const props = defineProps({
   canvasScale: Number,
@@ -59,6 +66,14 @@ function cancel() {
 function confirm() {
   emit('action', { name: 'confirm' });
 }
+
+// 选择stroke颜色
+const strokeColor = ref(config.strokeColor);
+
+watch(strokeColor, (color) => {
+  emit('action', { name: 'setStrokeColor', value: color });
+});
+
 </script>
 
 <style scoped>

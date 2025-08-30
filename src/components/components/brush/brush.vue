@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-5 items-center">
+  <div class="flex flex-col gap-4 items-center">
     <template v-for="item in brushList" :key="item.name">
       <component :is="item.icon" :size="20" class="cursor-pointer" :class="activeClass(item.name)"
         @click.stop="handleSelectBrush(item.name)" />

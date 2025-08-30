@@ -13,6 +13,7 @@ class Drawer {
     });
     this.imgBase64 = imgBase64;
     this.history = new History(this.canvas);
+    this.strokeColor = config.strokeColor;
 
     this.rect = new Rect(this.canvas, this.history);
     this.circle = new Circle(this.canvas, this.history);
@@ -56,6 +57,14 @@ class Drawer {
   drawLine() {
     this.clearPrevBrush();
     this.fnClearPrevBrush = this.freedraw.init();
+  }
+
+  setStrokeColor(color) {
+    this.strokeColor = color;
+    this.rect.strokeColor = color;
+    this.circle.strokeColor = color;
+    this.freedraw.strokeColor = color;
+    this.text.fontcolor = color;
   }
 
   getImage = scale => {

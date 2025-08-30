@@ -97,6 +97,10 @@ const actions = {
     }
     activeBrush.value = brush;
   },
+  // 设置画笔颜色
+  setStrokeColor: (color) => {
+    drawer.value.setStrokeColor(color);
+  },
   // 撤销上一步
   undo: () => {
     drawer.value.history.undo();
