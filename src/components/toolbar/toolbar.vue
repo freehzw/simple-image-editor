@@ -25,7 +25,7 @@
 import { ref, watch } from 'vue';
 import { Undo2, ZoomIn, ZoomOut, CircleX, CircleCheck, RefreshCcw } from 'lucide-vue-next';
 import brush from '../brush/brush.vue';
-import config from '../../drawer/config';
+import config from '../drawer/config';
 import ColorPicker from '../colorPicker/index.vue';
 
 const props = defineProps({

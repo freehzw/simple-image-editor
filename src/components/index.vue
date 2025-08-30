@@ -12,7 +12,7 @@
 <script setup>
 import { ref, nextTick, computed } from 'vue';
 import Drawer from './drawer/Drawer';
-import Toolbar from './components/toolbar/toolbar.vue';
+import Toolbar from './toolbar/toolbar.vue';
 import { getImg, blobToBase64, getImgSize, base64ToBlob } from './drawer/utils';
 
 const emit = defineEmits(['onSave']);
@@ -121,9 +121,8 @@ const actions = {
     let base64 = await drawer.value.getImage(imageSize.value.scale);
     let imgBlob = base64ToBlob(base64);
 
-    visible.value = false;
-
     emit('onSave', base64, imgBlob);
+    visible.value = false;
   }
 };
 
