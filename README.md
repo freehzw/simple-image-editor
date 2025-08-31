@@ -24,7 +24,6 @@ yarn add @freehzw/simple-image-editor
 import { ref } from 'vue';
 import { SimpleImageEditor } from '@freehzw/simple-image-editor';
 import '@freehzw/simple-image-editor/style.css';
-// 引入 tailwind 样式, 如果项目已安装tailwind，则不需要引入
 import '@freehzw/simple-image-editor/tailwind.css';
 
 const imageDrawerRef = ref(null);
