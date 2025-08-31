@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="fixed top-[50px] right-[50px] flex flex-col items-center gap-4 p-4 bg-neutral-800/50 rounded-xl z-10 backdrop-blur-sm">
+  <div class="toolbar">
     <CircleX :size="20" class="cursor-pointer text-red-500" @click="cancel" />
     <CircleCheck :size="20" class="cursor-pointer text-sky-500" @click="confirm" />
 
@@ -77,10 +76,37 @@ watch(strokeColor, (color) => {
 </script>
 
 <style scoped>
+.toolbar {
+  position: fixed;
+  top: 50px;
+  right: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: rgba(3, 3, 3, 0.6);
+  border-radius: 0.75rem;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
 .divider {
   width: 100%;
   height: 1px;
   border: none;
-  border-top: 1px solid #777;
+  border-top: 1px solid #444;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-red-500 {
+  color: #ef4444;
+}
+
+.text-sky-500 {
+  color: #0ea5e9;
 }
 </style>

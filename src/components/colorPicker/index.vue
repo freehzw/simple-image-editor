@@ -1,8 +1,7 @@
 <template>
-    <div class="w-[20px] h-[20px] rounded-full cursor-pointer border border-solid border-white"
-        :style="{ 'background': color }" @click.stop="show = !show">
-    </div>
-    <div class="fixed top-[200px] right-[70px]">
+    <div class="color-picker" :style="{ backgroundColor: color }" @click.stop="show = !show" />
+
+    <div class="color-picker-container">
         <SketchPicker v-model="color" v-if="show" />
     </div>
 </template>
@@ -28,3 +27,19 @@ watch(color, (color) => {
     emit('update:color', color);
 });
 </script>
+
+<style scoped>
+.color-picker {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid #ffffff;
+}
+
+.color-picker-container {
+    position: fixed;
+    top: 200px;
+    right: 70px;
+}
+</style>

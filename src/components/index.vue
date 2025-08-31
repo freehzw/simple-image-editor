@@ -1,7 +1,7 @@
 <template>
-  <div class="img-wrapper flex justify-center " v-if="visible">
+  <div class="editor-wrapper" v-if="visible">
     <div class="canvas-wrapper" v-if="imageSize" :style="canvasWrapperStyle" @wheel="handleWheel">
-      <img class="absolute inset-0 z-0" :src="imgBase64" />
+      <img class="image-wrapper" :src="imgBase64" />
       <canvas ref="canvas" :width="imageSize.width" :height="imageSize.height" />
     </div>
 
@@ -140,16 +140,16 @@ defineExpose({
 </script>
 
 <style scoped>
-.img-wrapper {
+.editor-wrapper {
   position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+  inset: 0;
+  display: flex;
+  justify-content: center;
   z-index: 999;
   padding: 50px;
   background: rgba(0, 0, 0, 0.6);
-  overflow-y: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .canvas-wrapper {
@@ -158,5 +158,11 @@ defineExpose({
   background-color: #fff;
   /*  关键：设置缩放中心,这样始终保持图片顶部可见 */
   transform-origin: top center;
+}
+
+.image-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 </style>

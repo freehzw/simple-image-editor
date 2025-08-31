@@ -4,9 +4,6 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  css: {
-    postcss: true, // 启用 PostCSS
-  },
   plugins: [vue()],
   build: {
     lib: {

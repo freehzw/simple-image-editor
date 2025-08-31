@@ -14,7 +14,7 @@ yarn add @freehzw/simple-image-editor
 ## 使用
 ```vue
 <template>
-  <div class="h-screen w-screen">
+  <div>
     <button @click="open">打开图片</button>
     <SimpleImageEditor ref="imageDrawerRef" @onSave="onSave" />
   </div>
@@ -24,7 +24,6 @@ yarn add @freehzw/simple-image-editor
 import { ref } from 'vue';
 import { SimpleImageEditor } from '@freehzw/simple-image-editor';
 import '@freehzw/simple-image-editor/style.css';
-import '@freehzw/simple-image-editor/tailwind.css';
 
 const imageDrawerRef = ref(null);
 
