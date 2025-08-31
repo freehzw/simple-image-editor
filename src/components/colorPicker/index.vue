@@ -9,7 +9,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { SketchPicker } from 'vue-color'
+import { SketchPicker } from 'vue-color';
 import 'vue-color/style.css';
 
 const props = defineProps({
