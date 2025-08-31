@@ -2,11 +2,12 @@
   "name": "@freehzw/simple-image-editor",
   "license": "MIT",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build:tailwind": "tailwindcss -i ./src/style.css -o ./dist/tailwind.css",
+    "build": "vite build && npm run build:tailwind",
     "preview": "vite preview"
   },
   "main": "./dist/simple-image-editor.umd.cjs",
@@ -16,7 +17,8 @@
       "import": "./dist/simple-image-editor.js",
       "require": "./dist/simple-image-editor.umd.cjs"
     },
-    "./style.css": "./dist/simple-image-editor.css"
+    "./style.css": "./dist/simple-image-editor.css",
+    "./tailwind.css": "./dist/tailwind.css"
   },
   "files": [
     "dist"
@@ -24,8 +26,8 @@
   "dependencies": {
     "fabric": "^4.5.0",
     "lucide-vue-next": "^0.542.0",
-    "vue": "^3.5.18",
-    "vue3-colorpicker": "^2.3.0"
+    "vue": "^3.0.0",
+    "vue-color": "^3.3.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
