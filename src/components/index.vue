@@ -64,6 +64,7 @@ const openUrl = async (url) => {
 
   nextTick(() => {
     drawer.value = new Drawer(canvas.value, imgBase64Value);
+    actions.selectBrush('rect'); // 默认选择矩形
   });
 };
 
@@ -118,11 +119,32 @@ const actions = {
     if (saving.value) return;
     saving.value = true;
 
-    let base64 = await drawer.value.getImage(imageSize.value.scale);
-    let imgBlob = base64ToBlob(base64);
+    const base64 = await drawer.value.getImage(imageSize.value.scale);
+    const imgBlob = base64ToBlob(base64);
 
     emit('onSave', base64, imgBlob);
     visible.value = false;
+  },
+  // preview
+  preview: async () => {
+    const base64 = await drawer.value.getImage(imageSize.value.scale);
+    // 将base64转换为Blob URL并在新窗口打开
+    const imgBlob = base64ToBlob(base64);
+    const blobUrl = URL.createObjectURL(imgBlob);
+    window.open(blobUrl, '_blank');
+    // 稍后释放URL对象
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+  },
+  // 下载图片
+  download: async () => {
+    const base64 = await drawer.value.getImage(imageSize.value.scale);
+    const imgBlob = base64ToBlob(base64);
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(imgBlob);;
+    a.download = 'temp.jpg';
+    a.click();
+    a.remove(); // 删除新创建的a元素
   }
 };
 

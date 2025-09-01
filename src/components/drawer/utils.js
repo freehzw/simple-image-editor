@@ -38,12 +38,7 @@ export async function getImgSize(base64) {
       let width = img.width;
       let height = img.height;
 
-      if (width > 1080) {
-        height = parseInt((height * 1080) / width);
-        width = 1080;
-      }
-
-      resolve({ width, height, originalWidth: img.width, originalHeight: img.height, scale: width / img.width });
+      resolve({ width, height, scale: 1 });
     };
   });
 }

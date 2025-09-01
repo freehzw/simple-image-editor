@@ -2,6 +2,10 @@
   <div class="toolbar">
     <CircleX :size="20" class="cursor-pointer text-red-500" @click="cancel" />
     <CircleCheck :size="20" class="cursor-pointer text-sky-500" @click="confirm" />
+    <Eye :size="20" color="#fff" class="cursor-pointer" @click="emit('action', { name: 'preview' })"
+      v-if="options.show.preview" />
+    <Download :size="20" color="#fff" class="cursor-pointer" @click="emit('action', { name: 'download' })"
+      v-if="options.show.download" />
 
     <div class="divider" />
 
@@ -21,16 +25,30 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { Undo2, ZoomIn, ZoomOut, CircleX, CircleCheck, RefreshCcw } from 'lucide-vue-next';
+import { reactive, ref, watch } from 'vue';
+import { Undo2, ZoomIn, ZoomOut, CircleX, CircleCheck, RefreshCcw, Download, Eye } from 'lucide-vue-next';
 import brush from '../brush/brush.vue';
 import config from '../drawer/config';
 import ColorPicker from '../colorPicker/index.vue';
 
 const props = defineProps({
   canvasScale: Number,
-  activeBrush: String
+  activeBrush: String,
+  options: {
+    type: Object,
+    default: () => ({})
+  }
 });
+
+// 显示工具栏图标, 默认设置
+const defaultOpts = reactive({
+  show: {
+    download: false,
+    preview: false,
+  }
+});
+// 工具栏配置
+const options = { ...defaultOpts, ...props.options }
 
 // const emit = defineEmits(['selectBrush', 'undo', 'scale', 'cancel', 'confirm']);
 const emit = defineEmits(['action']);
