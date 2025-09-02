@@ -2,7 +2,7 @@
   "name": "@freehzw/simple-image-editor",
   "license": "MIT",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.6",
   "type": "module",
   "scripts": {
     "dev": "vite",

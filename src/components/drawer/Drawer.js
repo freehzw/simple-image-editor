@@ -3,7 +3,6 @@ import config from './config';
 import Rect from './Rect';
 import Circle from './Circle';
 import Text from './Text';
-import Cropper from './Cropper';
 import Freedraw from './Freedraw';
 import History from './History';
 
@@ -20,7 +19,6 @@ class Drawer {
     this.circle = new Circle(this.canvas, this.history);
     this.text = new Text(this.canvas, this.history);
     this.freedraw = new Freedraw(this.canvas, this.history);
-    this.cropper = new Cropper(this.canvas, this.history);
 
     this.initEvent();
   }
@@ -61,10 +59,6 @@ class Drawer {
     this.fnClearPrevBrush = this.freedraw.init();
   }
 
-  // drawCropper() {
-  //   this.clearPrevBrush();
-  //   this.fnClearPrevBrush = this.cropper.init();
-  // }
 
   setStrokeColor(color) {
     this.strokeColor = color;
