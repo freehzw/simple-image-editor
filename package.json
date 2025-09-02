@@ -2,7 +2,7 @@
   "name": "@freehzw/simple-image-editor",
   "license": "MIT",
   "private": false,
-  "version": "0.0.9",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
+    "sass": "^1.91.0",
     "vite": "^7.1.2"
   },
   "peerDependencies": {

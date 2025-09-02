@@ -4,8 +4,7 @@
       <img class="image-wrapper" :src="imgBase64" />
       <canvas ref="canvas" :width="imageSize.width" :height="imageSize.height" />
 
-      <Cropper ref="cropperRef" :image-src="cropperSrc" v-if="showCropper" @cropped="cropped"
-        @close="showCropper = false" />
+      <Cropper ref="cropperRef" :image-src="cropperSrc" v-if="showCropper" @cropped="cropped" />
     </div>
 
     <Toolbar ref="toolbar" :active-brush="activeBrush" :canvas-scale="canvasScale" @action="action"
@@ -35,6 +34,7 @@ const imgBase64 = ref('');
 const canvas = ref(null);
 const toolbar = ref(null);
 
+const cropperRef = ref(null);
 const cropperSrc = ref(null);
 const showCropper = ref(false);
 
@@ -96,7 +96,6 @@ const openBase64 = async (imgBase64Value) => {
 const actions = {
   // 选择画笔工具
   selectBrush: (brush) => {
-    console.log('brush', brush);
     showCropper.value = false;
 
     switch (brush) {
@@ -140,6 +139,8 @@ const actions = {
     saving.value = true;
 
     const base64 = await drawer.value.getImage(imageSize.value.scale);
+    if (!base64) return;
+
     const imgBlob = base64ToBlob(base64);
 
     emit('onSave', base64, imgBlob);
@@ -148,6 +149,8 @@ const actions = {
   // preview
   preview: async () => {
     const base64 = await drawer.value.getImage(imageSize.value.scale);
+    if (!base64) return;
+
     // 将base64转换为Blob URL并在新窗口打开
     const imgBlob = base64ToBlob(base64);
     const blobUrl = URL.createObjectURL(imgBlob);
@@ -158,6 +161,7 @@ const actions = {
   // 下载图片
   download: async () => {
     const base64 = await drawer.value.getImage(imageSize.value.scale);
+    if (!base64) return;
     const imgBlob = base64ToBlob(base64);
 
     const a = document.createElement('a');
@@ -166,9 +170,16 @@ const actions = {
     a.click();
     a.remove(); // 删除新创建的a元素
   },
-  crop: async () => {
+  // 开始裁剪图片
+  openCrop: async () => {
     cropperSrc.value = await drawer.value.getImage(imageSize.value.scale);
     showCropper.value = true;
+  },
+  closeCrop: () => {
+    showCropper.value = false;
+  },
+  cropImage: () => {
+    cropperRef.value.cropImage();
   },
 };
 
@@ -184,12 +195,13 @@ async function cropped(base64) {
   imgBase64.value = base64;
   imageSize.value = await getImgSize(base64);
 
-  drawer.value.dispose();
+  await drawer.value.dispose();
   drawer.value = null;
   // 更新 drawer
   nextTick(() => {
     drawer.value = new Drawer(canvas.value, base64);
     showCropper.value = false;
+    toolbar.value.closeCrop();
   });
 }
 
@@ -208,9 +220,10 @@ defineExpose({
   justify-content: center;
   z-index: 999;
   padding: 50px;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   overflow-y: auto;
   overflow-x: hidden;
+  backdrop-filter: blur(5px);
 }
 
 .canvas-wrapper {

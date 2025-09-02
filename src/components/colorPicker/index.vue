@@ -39,7 +39,7 @@ watch(color, (color) => {
 
 .color-picker-container {
     position: fixed;
-    top: 200px;
-    right: 70px;
+    top: 250px;
+    right: 120px;
 }
 </style>

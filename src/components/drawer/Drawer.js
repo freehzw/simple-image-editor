@@ -79,24 +79,26 @@ class Drawer {
       let img = new Image();
       img.src = this.imgBase64;
 
-      let bgImg = new fabric.Image(img);
-      bgImg.set({ scaleX: scale, scaleY: scale, originX: 'left', originY: 'top' });
+      // 等待图片加载完成后再设置背景
+      img.onload = () => {
+        let bgImg = new fabric.Image(img);
+        bgImg.set({ scaleX: scale, scaleY: scale, originX: 'left', originY: 'top' });
 
-      this.canvas.setBackgroundImage(bgImg, () => {
-        // let base64 = this.canvas.toDataURL();
-        let base64 = this.canvas.toDataURL({
-          format: 'jpeg', // 指定生成 JPG 图片
-          quality: 0.8, // 指定 JPG 图片的质量，范围是 0 到 1
+        this.canvas.setBackgroundImage(bgImg, () => {
+          let base64 = this.canvas.toDataURL({ // fabric.js 默认生成 PNG 图片
+            format: 'jpeg', // 指定生成 JPG 图片
+            quality: 0.85, // 指定 JPG 图片的质量，范围是 0 到 1
+          });
+          resolve(base64);
         });
-        resolve(base64);
-      });
+      };
     });
   };
 
   // 销毁画布
-  dispose() {
+  dispose = async () => {
     if (this.canvas) {
-      this.canvas.dispose();
+      await this.canvas.dispose();
       this.canvas = null;
     }
   }

@@ -8,7 +8,14 @@
       v-if="options.show.download" />
 
     <div class="divider" />
-    <Crop :size="20" color="#fff" class="cursor-pointer" @click="emit('action', { name: 'crop' })" />
+    <div class="crop-buttons">
+      <Crop :size="20" class="cursor-pointer" @click="openCrop" :class="isCropping ? 'text-green' : 'text-white'" />
+
+      <div class="group" v-if="isCropping">
+        <Check :size="20" @click="cropImage" class="cursor-pointer text-sky-500" />
+        <X :size="20" @click="closeCrop" class="cursor-pointer text-red-500" />
+      </div>
+    </div>
 
     <div class="divider" />
     <brush :active-brush="activeBrush" @onSelectBrush="handleSelectBrush" />
@@ -54,7 +61,7 @@ const options = { ...defaultOpts, ...props.options }
 
 // const emit = defineEmits(['selectBrush', 'undo', 'scale', 'cancel', 'confirm']);
 const emit = defineEmits(['action']);
-
+const isCropping = ref(false);
 
 function handleSelectBrush(brush) {
   emit('action', { name: 'selectBrush', value: brush });
@@ -88,6 +95,21 @@ function confirm() {
   emit('action', { name: 'confirm' });
 }
 
+function openCrop() {
+  emit('action', { name: 'openCrop' });
+  isCropping.value = true;
+}
+
+function closeCrop() {
+  isCropping.value = false;
+  emit('action', { name: 'closeCrop' });
+}
+
+function cropImage() {
+  emit('action', { name: 'cropImage' });
+}
+
+
 // 选择stroke颜色
 const strokeColor = ref(config.strokeColor);
 
@@ -95,9 +117,13 @@ watch(strokeColor, (color) => {
   emit('action', { name: 'setStrokeColor', value: color });
 });
 
+defineExpose({
+  closeCrop,
+});
+
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .toolbar {
   position: fixed;
   top: 50px;
@@ -107,10 +133,10 @@ watch(strokeColor, (color) => {
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background-color: rgba(3, 3, 3, 0.6);
+  background-color: rgba(30, 30, 30, 1);
   border-radius: 0.75rem;
   z-index: 10;
-  backdrop-filter: blur(4px);
+  /* backdrop-filter: blur(4px); */
 }
 
 .divider {
@@ -128,7 +154,38 @@ watch(strokeColor, (color) => {
   color: #ef4444;
 }
 
+.text-white {
+  color: #fff;
+}
+
+.text-green {
+  color: green;
+}
+
 .text-sky-500 {
   color: #0ea5e9;
+}
+
+.crop-buttons {
+  position: relative;
+  /* backdrop-filter: blur(4px); */
+
+  .group {
+    position: absolute;
+    top: 50%;
+    left: -100px;
+    height: 30px;
+    padding: 10px;
+    padding-right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background-color: rgba(30, 30, 30, 1);
+    /* box-shadow: 0 0 5px rgba(255, 255, 255, 0.8); */
+    border-radius: 10px 0 0 10px;
+    /* backdrop-filter: blur(4px); */
+  }
 }
 </style>
