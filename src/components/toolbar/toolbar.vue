@@ -1,14 +1,16 @@
 <template>
   <div class="toolbar">
-    <CircleX :size="20" class="cursor-pointer text-red-500" @click="cancel" />
-    <CircleCheck :size="20" class="cursor-pointer text-sky-500" @click="confirm" />
+    <X :size="20" class="cursor-pointer text-red-500" @click="cancel" />
+    <Check :size="20" class="cursor-pointer text-sky-500" @click="confirm" />
     <Eye :size="20" color="#fff" class="cursor-pointer" @click="emit('action', { name: 'preview' })"
       v-if="options.show.preview" />
     <Download :size="20" color="#fff" class="cursor-pointer" @click="emit('action', { name: 'download' })"
       v-if="options.show.download" />
 
     <div class="divider" />
+    <Crop :size="20" color="#fff" class="cursor-pointer" @click="emit('action', { name: 'crop' })" />
 
+    <div class="divider" />
     <brush :active-brush="activeBrush" @onSelectBrush="handleSelectBrush" />
 
     <div class="divider" />
@@ -16,7 +18,7 @@
     <Undo2 :size="20" color="#fff" class="cursor-pointer" @click="undo" />
     <ZoomIn :size="20" color="#fff" class="cursor-pointer" @click="zoom('in')" title="放大" />
     <ZoomOut :size="20" color="#fff" class="cursor-pointer" @click="zoom('out')" />
-    <RefreshCcw :size="20" color="#fff" class="cursor-pointer" @click="zoom('reset')" />
+    <RefreshCcw :size="20" color="#fff" class="cursor-pointer" @click="reset" />
     <div class="divider" />
 
     <!-- 取色板 -->
@@ -26,7 +28,7 @@
 
 <script setup>
 import { reactive, ref, watch } from 'vue';
-import { Undo2, ZoomIn, ZoomOut, CircleX, CircleCheck, RefreshCcw, Download, Eye } from 'lucide-vue-next';
+import { Undo2, ZoomIn, ZoomOut, X, Check, RefreshCcw, Download, Eye, Crop } from 'lucide-vue-next';
 import brush from '../brush/brush.vue';
 import config from '../drawer/config';
 import ColorPicker from '../colorPicker/index.vue';
@@ -65,9 +67,7 @@ function undo() {
 function zoom(type) {
   let value = 1;
 
-  if (type === 'reset') {
-    value = 1;
-  } else if (type === 'in' && props.canvasScale < 2) {
+  if (type === 'in' && props.canvasScale < 2) {
     value = parseFloat((props.canvasScale + 0.1).toFixed(1));
   } else if (type === 'out' && props.canvasScale > 0.1) {
     value = parseFloat((props.canvasScale - 0.1).toFixed(1));
@@ -78,6 +78,10 @@ function zoom(type) {
 
 function cancel() {
   emit('action', { name: 'cancel' });
+}
+
+function reset() {
+  emit('action', { name: 'reset' });
 }
 
 function confirm() {

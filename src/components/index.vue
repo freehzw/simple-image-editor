@@ -3,9 +3,13 @@
     <div class="canvas-wrapper" v-if="imageSize" :style="canvasWrapperStyle" @wheel="handleWheel">
       <img class="image-wrapper" :src="imgBase64" />
       <canvas ref="canvas" :width="imageSize.width" :height="imageSize.height" />
+
+      <Cropper ref="cropperRef" :image-src="cropperSrc" v-if="showCropper" @cropped="cropped"
+        @close="showCropper = false" />
     </div>
 
-    <Toolbar ref="toolbar" :active-brush="activeBrush" :canvas-scale="canvasScale" @action="action" />
+    <Toolbar ref="toolbar" :active-brush="activeBrush" :canvas-scale="canvasScale" @action="action"
+      :options="{ show: { preview: true } }" />
   </div>
 </template>
 
@@ -14,8 +18,12 @@ import { ref, nextTick, computed } from 'vue';
 import Drawer from './drawer/Drawer';
 import Toolbar from './toolbar/toolbar.vue';
 import { getImg, blobToBase64, getImgSize, base64ToBlob } from './drawer/utils';
+import Cropper from './cropper/index.vue';
+
 
 const emit = defineEmits(['onSave']);
+
+let originBase64 = null; // 原始图片base64
 
 const visible = ref(false);
 const saving = ref(false);
@@ -26,6 +34,9 @@ const canvasScale = ref(1);
 const imgBase64 = ref('');
 const canvas = ref(null);
 const toolbar = ref(null);
+
+const cropperSrc = ref(null);
+const showCropper = ref(false);
 
 const canvasWrapperStyle = computed(() => ({
   width: `${imageSize.value?.width}px`,
@@ -61,10 +72,13 @@ const openUrl = async (url) => {
   const imgBase64Value = await blobToBase64(imgBlob);
   imageSize.value = await getImgSize(imgBase64Value);
   imgBase64.value = imgBase64Value;
+  cropperSrc.value = imgBase64Value;
+  originBase64 = imgBase64Value;
+
 
   nextTick(() => {
     drawer.value = new Drawer(canvas.value, imgBase64Value);
-    actions.selectBrush('rect'); // 默认选择矩形
+    // actions.selectBrush('rect'); // 默认选择矩形
   });
 };
 
@@ -82,6 +96,9 @@ const openBase64 = async (imgBase64Value) => {
 const actions = {
   // 选择画笔工具
   selectBrush: (brush) => {
+    console.log('brush', brush);
+    showCropper.value = false;
+
     switch (brush) {
       case 'rect':
         drawer.value.drawRect();
@@ -114,6 +131,9 @@ const actions = {
   cancel: () => {
     visible.value = false;
   },
+  reset: () => {
+    openBase64(originBase64);
+  },
   // 保存
   confirm: async () => {
     if (saving.value) return;
@@ -145,13 +165,32 @@ const actions = {
     a.download = 'temp.jpg';
     a.click();
     a.remove(); // 删除新创建的a元素
-  }
+  },
+  crop: async () => {
+    cropperSrc.value = await drawer.value.getImage(imageSize.value.scale);
+    showCropper.value = true;
+  },
 };
 
 // 处理 action
 function action({ name, value }) {
   if (value) actions[name](value);
   else actions[name]();
+}
+
+// 监听 cropper 剪裁
+async function cropped(base64) {
+  cropperSrc.value = base64;
+  imgBase64.value = base64;
+  imageSize.value = await getImgSize(base64);
+
+  drawer.value.dispose();
+  drawer.value = null;
+  // 更新 drawer
+  nextTick(() => {
+    drawer.value = new Drawer(canvas.value, base64);
+    showCropper.value = false;
+  });
 }
 
 
@@ -177,7 +216,6 @@ defineExpose({
 .canvas-wrapper {
   position: relative;
   width: 100%;
-  background-color: #fff;
   /*  关键：设置缩放中心,这样始终保持图片顶部可见 */
   transform-origin: top center;
 }

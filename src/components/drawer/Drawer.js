@@ -3,6 +3,7 @@ import config from './config';
 import Rect from './Rect';
 import Circle from './Circle';
 import Text from './Text';
+import Cropper from './Cropper';
 import Freedraw from './Freedraw';
 import History from './History';
 
@@ -19,6 +20,7 @@ class Drawer {
     this.circle = new Circle(this.canvas, this.history);
     this.text = new Text(this.canvas, this.history);
     this.freedraw = new Freedraw(this.canvas, this.history);
+    this.cropper = new Cropper(this.canvas, this.history);
 
     this.initEvent();
   }
@@ -59,6 +61,11 @@ class Drawer {
     this.fnClearPrevBrush = this.freedraw.init();
   }
 
+  // drawCropper() {
+  //   this.clearPrevBrush();
+  //   this.fnClearPrevBrush = this.cropper.init();
+  // }
+
   setStrokeColor(color) {
     this.strokeColor = color;
     this.rect.strokeColor = color;
@@ -76,6 +83,7 @@ class Drawer {
       bgImg.set({ scaleX: scale, scaleY: scale, originX: 'left', originY: 'top' });
 
       this.canvas.setBackgroundImage(bgImg, () => {
+        // let base64 = this.canvas.toDataURL();
         let base64 = this.canvas.toDataURL({
           format: 'jpeg', // 指定生成 JPG 图片
           quality: 0.8, // 指定 JPG 图片的质量，范围是 0 到 1
@@ -84,6 +92,14 @@ class Drawer {
       });
     });
   };
+
+  // 销毁画布
+  dispose() {
+    if (this.canvas) {
+      this.canvas.dispose();
+      this.canvas = null;
+    }
+  }
 }
 
 export default Drawer;
