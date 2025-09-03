@@ -1,1 +1,19 @@
+.cursor-pointer {
+	cursor: pointer;
+}
 
+.text-red {
+	color: #ef4444;
+}
+
+.text-white {
+	color: #fff;
+}
+
+.text-green {
+	color: #b0fc5b;
+}
+
+.text-sky {
+	color: #0ea5e9;
+}

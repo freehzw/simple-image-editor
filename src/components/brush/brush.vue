@@ -20,17 +20,3 @@ const handleSelectBrush = (brushName) => {
   emit('onSelectBrush', brushName);
 };
 </script>
-
-<style scoped>
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.text-white {
-  color: white;
-}
-
-.text-green {
-  color: green;
-}
-</style>

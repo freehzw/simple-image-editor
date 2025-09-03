@@ -6,10 +6,14 @@
 
       <Cropper ref="cropperRef" :image-src="cropperSrc" v-if="showCropper" @cropped="cropped" />
     </div>
-
-    <Toolbar ref="toolbar" :active-brush="activeBrush" :canvas-scale="canvasScale" @action="action"
-      :options="{ show: { preview: true } }" />
   </div>
+
+  <div class="cancel" @click="visible = false" title="close" v-if="visible">
+    <X :size="20" color="#fff" :stroke-width="1" />
+  </div>
+
+  <Toolbar ref="toolbar" :active-brush="activeBrush" :canvas-scale="canvasScale" @action="action"
+    :options="{ show: { preview: true } }" v-if="visible" />
 </template>
 
 <script setup>
@@ -18,6 +22,7 @@ import Drawer from './drawer/Drawer';
 import Toolbar from './toolbar/toolbar.vue';
 import { getImg, blobToBase64, getImgSize, base64ToBlob } from './drawer/utils';
 import Cropper from './cropper/index.vue';
+import { X } from 'lucide-vue-next';
 
 
 const emit = defineEmits(['onSave']);
@@ -118,6 +123,10 @@ const actions = {
   setStrokeColor: (color) => {
     drawer.value.setStrokeColor(color);
   },
+
+  setFillColor: (color) => {
+    drawer.value.setFillColor(color);
+  },
   // 撤销上一步
   undo: () => {
     drawer.value.history.undo();
@@ -212,7 +221,7 @@ defineExpose({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .editor-wrapper {
   position: fixed;
   inset: 0;
@@ -220,15 +229,32 @@ defineExpose({
   justify-content: center;
   z-index: 999;
   padding: 50px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.5);
   overflow-y: auto;
   overflow-x: hidden;
   backdrop-filter: blur(5px);
 }
 
+.cancel {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 5px #000;
+  z-index: 999;
+}
+
 .canvas-wrapper {
   position: relative;
   width: 100%;
+  z-index: 0;
   /*  关键：设置缩放中心,这样始终保持图片顶部可见 */
   transform-origin: top center;
 }

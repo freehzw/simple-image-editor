@@ -1,7 +1,6 @@
 <template>
   <div class="toolbar">
-    <X :size="20" class="cursor-pointer text-red-500" @click="cancel" />
-    <Check :size="20" class="cursor-pointer text-sky-500" @click="confirm" />
+    <Save :size="20" class="cursor-pointer text-sky" @click="confirm" />
     <Eye :size="20" color="#fff" class="cursor-pointer" @click="emit('action', { name: 'preview' })"
       v-if="options.show.preview" />
     <Download :size="20" color="#fff" class="cursor-pointer" @click="emit('action', { name: 'download' })"
@@ -12,8 +11,8 @@
       <Crop :size="20" class="cursor-pointer" @click="openCrop" :class="isCropping ? 'text-green' : 'text-white'" />
 
       <div class="group" v-if="isCropping">
-        <Check :size="20" @click="cropImage" class="cursor-pointer text-sky-500" />
-        <X :size="20" @click="closeCrop" class="cursor-pointer text-red-500" />
+        <Check :size="20" @click="cropImage" class="cursor-pointer text-sky" />
+        <X :size="20" @click="closeCrop" class="cursor-pointer text-red" />
       </div>
     </div>
 
@@ -29,16 +28,18 @@
     <div class="divider" />
 
     <!-- 取色板 -->
-    <ColorPicker v-model:color="strokeColor" />
+    <ColorPicker v-model:color="strokeColor" method="stroke" />
+    <ColorPicker v-model:color="fillColor" method="fill" />
   </div>
 </template>
 
 <script setup>
 import { reactive, ref, watch } from 'vue';
-import { Undo2, ZoomIn, ZoomOut, X, Check, RefreshCcw, Download, Eye, Crop } from 'lucide-vue-next';
+import { Undo2, ZoomIn, ZoomOut, X, Check, RefreshCcw, Download, Eye, Crop, Save } from 'lucide-vue-next';
 import brush from '../brush/brush.vue';
 import config from '../drawer/config';
 import ColorPicker from '../colorPicker/index.vue';
+
 
 const props = defineProps({
   canvasScale: Number,
@@ -58,8 +59,6 @@ const defaultOpts = reactive({
 });
 // 工具栏配置
 const options = { ...defaultOpts, ...props.options }
-
-// const emit = defineEmits(['selectBrush', 'undo', 'scale', 'cancel', 'confirm']);
 const emit = defineEmits(['action']);
 const isCropping = ref(false);
 
@@ -83,9 +82,6 @@ function zoom(type) {
   emit('action', { name: 'scale', value: value });
 }
 
-function cancel() {
-  emit('action', { name: 'cancel' });
-}
 
 function reset() {
   emit('action', { name: 'reset' });
@@ -112,9 +108,14 @@ function cropImage() {
 
 // 选择stroke颜色
 const strokeColor = ref(config.strokeColor);
+const fillColor = ref(config.fillColor);
 
 watch(strokeColor, (color) => {
   emit('action', { name: 'setStrokeColor', value: color });
+});
+
+watch(fillColor, (color) => {
+  emit('action', { name: 'setFillColor', value: color });
 });
 
 defineExpose({
@@ -126,17 +127,18 @@ defineExpose({
 <style lang="scss" scoped>
 .toolbar {
   position: fixed;
-  top: 50px;
-  right: 50px;
+  top: 100px;
+  right: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background-color: rgba(30, 30, 30, 1);
-  border-radius: 0.75rem;
-  z-index: 10;
-  /* backdrop-filter: blur(4px); */
+  background-color: rgba(30, 30, 30, 0.8);
+  border-radius: 0.25rem;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 0 5px #000;
 }
 
 .divider {
@@ -146,46 +148,23 @@ defineExpose({
   border-top: 1px solid #444;
 }
 
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.text-red-500 {
-  color: #ef4444;
-}
-
-.text-white {
-  color: #fff;
-}
-
-.text-green {
-  color: green;
-}
-
-.text-sky-500 {
-  color: #0ea5e9;
-}
 
 .crop-buttons {
   position: relative;
-  /* backdrop-filter: blur(4px); */
 
   .group {
     position: absolute;
     top: 50%;
-    left: -100px;
-    height: 30px;
+    left: -105px;
     padding: 10px;
-    padding-right: 20px;
     transform: translateY(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 20px;
-    background-color: rgba(30, 30, 30, 1);
-    /* box-shadow: 0 0 5px rgba(255, 255, 255, 0.8); */
-    border-radius: 10px 0 0 10px;
-    /* backdrop-filter: blur(4px); */
+    background-color: rgba(30, 30, 30, 0.8);
+    box-shadow: 0 0 5px #000;
+    border-radius: 0.25rem;
   }
 }
 </style>
