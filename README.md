@@ -4,6 +4,10 @@ Fork自[vue-image-annotation](https://github.com/wawjqyh/vue-image-annotation), 
 
 ![截图](https://github.com/freehzw/simple-image-editor/raw/master/screen.jpg)
 
+## DEMO
+
+[DEMO](https://freehzw.github.io/simple-image-editor/)
+
 ## 安装
 ```bash
 npm install @freehzw/simple-image-editor
