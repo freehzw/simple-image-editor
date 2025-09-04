@@ -255,7 +255,7 @@ defineExpose({
   position: relative;
   width: 100%;
   z-index: 0;
-  /*  关键：设置缩放中心,这样始终保持图片顶部可见 */
+  /* 设置缩放中心,这样始终保持图片顶部可见 */
   transform-origin: top center;
 }
 
